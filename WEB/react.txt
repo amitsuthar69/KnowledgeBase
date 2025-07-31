@@ -1,0 +1,49 @@
+# React 
+
+- A JavaScript library for building UIs, known for component-based architecture and efficient rendering
+
+- Virtual DOM:
+  - Lightweight in-memory representation of the actual DOM.
+  - Uses Fiber Reconciliation diffing algorithm to only update changed components.
+  - Enables efficient updates by comparing old and new versions.
+
+- Component Architecture:
+  - Components are Building blocks of React applications.
+  - Split UI into independent, reusable pieces.
+  - Two main types: Functional and Class Components.
+
+- State Management:
+  - Local state is managed within components.
+  - React provides useState hook to persist data across re-renders.
+    - useState hook provides an immutable state and a state modifier callback function.
+    - Any modification to state will cause a re-render.
+  - Read-only Props are used to pass data between components.
+  - Context API for sharing state across component tree.
+
+- JSX:
+  - A special templating syntax used to combine UI with logic.
+  - React uses Babel to transpile JSX back to normal JS.
+
+- Hooks:
+  - Functions that let you use state and lifecycle features in functional components
+  - Most commonly asked hooks:
+    - useState: Manages component state.
+    - useEffect: Handles side effects.
+    - useContext: Access context without nesting (sort of global state) (avoids prop drilling).
+    - useMemo and useCallback: Both are optimization hooks that Caches expensive function calls 
+      and prevent unnecessary re-renders but have different use cases.
+        - useMemo: Memoizes computed values. Used when computation is expensive.
+        - useCallback: Memoizes function instances. Used when preventing unnecessary re-renders of child components.
+
+# React Redux: 
+
+- A State management library that centralizes application state
+
+1. Actions => events with some payload data
+2. Slices  => features which needs state.
+							includes initial state and reducer signatures for that slice.
+3. Reducer => functions which will mutate the state 
+4. Store   => centralised data store.
+5. State   => Immutable reactive data
+
+ui -> trigger event -> event handler -> dispatch action -> call corresponding reducer -> perform state update logic ->  update store -> state update -> update ui.

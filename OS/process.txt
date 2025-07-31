@@ -1,0 +1,51 @@
+- A process can be thought as a progarm in execution.
+  - A thread is the unit of execution within a process.
+    - A process can have nay number of threads.
+
+- Process State:
+  - When a process executes, it chnages its state.
+  - The state of process is defined by the current activity of the process.
+  - States of a process:
+    - New:        Process is being created.
+    - Ready:      Process is ready to be assigned to a processor.
+    - Running:    Process instruction are being executed.
+    - Waiting:    Process is waiting for some event to occur. (eg: I/O).
+    - Terminated: Process has finished executing.
+
+  - Process flow:
+    1. A new process gets created.                 [New]
+    2. The kernel admits it to Ready state.        [Ready]
+    3. The Scheduler dispatches it to a processor.
+    4. The Process starts executing.               [Running]
+       From Running state, a process can either:
+       5. Gets interupted & get back to ready state
+       6. Gets blocked by I/O operation.           [Waiting]
+       7. Exits                                    [Terminated]
+
+- Process Control Block:
+  - A Process Control Block(PCB) is a data structure used by an OS to store all the information about a process.
+  - A PCB consists of:
+    - Process ID      --> Unique process identifier.
+    - Process State   --> discussed above
+    - Program Counter --> Address of next instruction to be executed for this process.
+    - CPU Registers   --> CPU registers being used by this process. (stack pointer, caches, etc).
+    - Scheduling Info --> Scheduling Priority information.
+    - MMo Info        --> Memory management information.
+    - I/O Status      --> Status of I/O devices.
+    - ls Open files   --> List of open files. (file descriptor table)
+
+- Process Scheduling Queues:
+  - Job Queue: It contains all the processes that are waiting to be executed.
+  - Ready Queue: It holds processes that are in main memory and ready to run on the CPU. 
+  - The job queue is the first stage where jobs wait, and once they are ready, they move to the ready queue for execution.
+
+- Context Switch:
+  - When an interrupt occurs, 
+    the system needs to save the context of the currently running process so that it can be restored and executed again. 
+  - This context is stored in PCB.
+
+- Sockets:
+  - A socket is an endpoint used for two-way interprocess communication channel.
+  - A socket enables communication between different processes on same or over a network.
+  - Sockets use (protocol + IP + Port) to communicate over network.
+

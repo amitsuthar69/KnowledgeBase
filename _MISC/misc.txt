@@ -1,0 +1,103 @@
+# API performance tips:
+1. Pagination
+2. Caching
+3. Payload compression
+4. Connection pool
+
+# Load balancing techniques
+1. Round Robin
+2. Weighted Round Robin
+3. IP Hashing
+4. Consistent Hashing
+5. Least Connections
+6. Least Response Time
+7. Geographic
+
+# How JSON works:
+  - JSON uses human-readable text with explicit structure markers ({}, [], "")
+  - Identifies the root object and then Recursively traverse nested structures.
+  - Objects -> JSON String Format -> UTF-8 bytes -> ready to transmit
+  - Characters ({}, [], "")
+  
+  - JSON is ideal for:
+      - API responses
+      - Configuration files
+      - Debugging
+      - Documentation
+
+# How MessagePack works:
+  - Objects -> Msgpack Binary Format -> Msgpack bytes -> reay to transmit
+  - Single bytes (\x81, \x82, etc.)	
+
+  - MessagePack is optimal for:
+    - High-performance applications
+    - Real-time communication
+    - Internal Messaging
+
+
+- Consistency Availability Partition (CAP) Theorem:
+
+- The CAP theorem states that in a distributed system, you can only guarantee two out of three properties simultaneously:
+  - Consistency: All clients see the same data simultaneously, regardless of which node they connect to.
+  - Availability: All non-failing nodes return a response for all read and write requests in a bounded time.
+  - Partition Tolerance: The system continues to operate despite network failures or partitions.
+
+- A Message Queue is a fundamental component in distributed systems that enables asynchronous communication 
+  between different parts of a system.
+- It acts as a buffer that temporarily stores messages between producers and consumers, 
+  allowing them to operate independently and at their own pace.
+
+- 4 Core Components:
+  - Producers: Components that generate and send messages to the queue.
+    - The producer can continue processing immediately after sending the message, without waiting for a response. 
+  - Consumers: Components that receive and process messages from the queue.
+  - Brokers: Core components that manage message storage, routing, and delivery.
+  - Queues: FIFO Data structure that hold messages until they are processed.
+
+- key advantages:
+  - Asynchronous Communication: Components can operate independently without blocking.
+  - Decoupling: Producers and consumers can be developed and scaled independently.
+  - Reliability: Messages persist even if consumers are temporarily unavailable.
+  - Scalability: Systems can handle high message volumes through horizontal scaling.
+  - Load Balancing: Messages can be distributed across multiple brokers.
+
+- 2 main Types of Message Queues
+  -  Point-to-Point Queues:
+    - Messages are consumed by exactly one consumer
+    - Used for request-response patterns and work queues
+    - Ensures guaranteed delivery
+  
+  -  Publish-Subscribe Queues:
+    - Messages are delivered to all subscribed consumers
+    - Ideal for real-time streaming applications
+    - Supports event-driven architecture
+
+- Real-World Applications:
+  - Event-driven architectures
+  - Microservices communication
+  - Stream processing systems
+  - Task distribution and workload balancing
+
+- For example, in an e-commerce system, when a user places an order, the order processing service can send a message
+  to a queue, and the payment processing service can consume this message asynchronously. 
+  This decoupling ensures that the order processing service remains responsive even if the payment service is temporarily busy or unavailable.
+
+
+Virtualization is the process where software is used to create an abstraction layer over Compyter Hardware. 
+
+2 Popular ways to virtualize:
+
+Virtual Machines:
+  virtualization level: HARDWARE 
+  isolation: OS level (each OS is independent)
+  Hyperviser manages everything.
+  Hyperviser: rsponsible for anaging and allocating virtual resources to each VM.
+  Hardware -> Host OS -> Hyperviser -> VMs running their own Guest OS with Virtual hardware (vCPU, vRAM)
+
+Containerization (Portable containers):
+  virtualization level: OS 
+  isolation: Process level (each process is isolated)
+  Kernel manages namespaces, control groups.
+    cgroups: allocates resources among the processes.
+    namespaces: restricts a container's access and visibility to other resources on system.
+  Hardware -> Host OS -> Runtime Engine -> Containers running in their own isolated environment.

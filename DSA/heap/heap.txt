@@ -1,0 +1,76 @@
+For a binary tree,
+if a node is at index i, (1-based indexing)
+  then relation is given as:
+  - its left child is at: 2*1
+  - its right child is at: 2*i + 1
+  - its parent is at: floor(i/2)
+
+> Full Binary Tree:
+  - A BT whose all nodes are at same level and has all levels completely filled.
+  - If height of a full binary tree is h then it can have [2^(h+1) - 1] nodes. 
+
+> Complete Binary Tree:
+  - A BT whose level order traversal results no missing node in between.
+  - A Complete BT is a full BT upto height h-1 and in the last level, elements are filled from left to right.
+  - Height of a complete BT will always be log(n).
+
+> Every full binary tree is also a complete binary tree.
+
+> Heap
+  - A heap is a complete Binary Tree.
+  - Two Types:
+    > Min Heap  |  > Max Heap
+    1. Max Heap: A complete BT where each node has a value greater than or equal to its descendants.
+    2. Min Heap: A complete BT where each node has a value lesser than or equal to its descendants.
+
+  > Insertion in Max Heap:
+    - The new element first goes to the most correct position in bottom to make it a valid Complete Tree.
+    - This breaks the Max Heap condition, so we adjust the elements.
+    - So we perform Insertion using the parent-child relation.
+      - keep swaping the new element with parents greater than it.
+      - swap(new_elm, elem[i/2])
+      - As a complete BT has height of ~log(n), at worst, we'll always swap log(n) elements.
+        - Hence Insertion operation has TC: Worst O(log(n)), Best O(1).
+    = Insertion happens from "LEAF TO ROOT".
+
+  > Deletion in Max Heap:
+    - We always delete the root of the Heap!
+    - After deletion, the last leaf node from right takes root's place. (to satisfy complete bianry tree).
+    = Deletion happens from "ROOT TO LEAF".
+      - Compare the l_child and r_child of root, swap the root with max(l_child, r_child).
+        - root = max(root, max(2*i, 2*i+1))
+          = Only swap the max child if it's bigger than the root itself.
+    - Deletion also takes log(n) time.
+
+  > Creating a Heap:
+    - We start with first element in the array, make it the root of Heap.
+    - Then we move to next element,
+      - From here, we follow the "Insertion in Max Heap" algorithm.
+        - Insert the next array element in tree with complete tree fashion.
+        - If this newly inserted elem is greater than parent (i/2), swap it with parent.
+        - Move to next elem in array and continue.
+    - This creation will take n*log(n) Time complexity. (no. of elem * height of complete BT).
+
+  > Heap Sort:
+    - The idea derives from Deletion in Max Heap!
+    - If we store the popped max element in the same array from back, we get a increasing sorted array!
+    = Heap Sort steps:
+      - Create a Heap from given array. (nlogn)
+      - Delete elements from the heap.  (nlogn)
+      - Store the deleted elem in the free space obtained after swapping.
+      = Time complexity: nlogn + nlogn = 2nlogn = O(nlogn)
+  
+  > Heapify:
+    - It is the process of creating a heap by Insertion.
+    - It differs in the way of balancing the Heap after insertion.
+    - Given a Complete BT, perform Heapify. (top-down)
+      - It starts from last leaf of complete BT, with all the leaf node being a valid heap.
+      - Then we go the parent and compare in the "Deletion in Max Heap" fashion.
+        - Compare the descendants, swap the parent as: parent = max(parent, max(2*i, 2*i+1))
+    = Time complexity: O(N)
+    = Minimum time taken to create a Heap is with heapify.
+
+  > Priority Queue:
+    - Element with highest/lowest priority will get deleted.
+    = Min Heap: Smaller the number, Higher the Priority.
+    = Max Heap: Larger the number, Higher the Priority.

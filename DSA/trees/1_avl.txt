@@ -1,0 +1,81 @@
+- AVL (Adelson-Velsky and Landis) trees are a self-balancing binary search tree.
+
+- Balanced BST:
+  - A BST can still obey the left < root < right rule, but be very lopsided.
+  - It behaves like a linked list, searching becomes O(n), not O(log n)
+
+  - AVL trees fix that by enforcing a "Balance Factor".
+    - Balance Factor(BF) = height(left subtree) − height(right subtree)
+    - The Balance Factor must always be: −1, 0, or +1.
+    
+    - Hence, A Binary Search Tree is considered balanced if:
+      - For EVERY NODE, the balance factor between its left and right subtrees is at most 1.
+      - Example Balanced Tree:
+           20
+          /  \
+        10    30
+        Here, BF(20) = height(1) - height(1) = 0 = OK!
+
+    - If any node has a balance factor outside the range [−1, 0, +1], it’s unbalanced.
+
+    = The process of transforming an unbalanced BST to balanced BST is called "Rotation".
+      = Rotation can only be performed on 3 NODES.
+      - Nail-thread anology.
+
+    = Rotations:
+      - given a blanced BST:
+          [30] --> bf=1
+          /
+        [20]   -- bf=0
+      
+      - insert a new element '10':
+            [30] --> bf=2
+            / 
+          [20]   --> bf=1
+          /
+        [10]     --> vf=0
+        insertion unbalanced the tree
+
+      - What caused the imbalance?
+        - As 10 was lesser than its parents, it went to left extreme position.
+        - This made the tree heavier on left.
+        - Hence we'll call it an "LL-Imbalance".
+
+      - To fix this, we'll perform an "LL-Rotation"
+            [30]              [20]    --> bf=0
+            /                 /  \
+          [20]     ---->   [10]  [30] --> bf=0
+          /
+        [10]
+
+      - Likewise, LR, RR, RL Rotations.
+        - LR and RL Rotations require 2 steps.
+
+  - Creation of AVL Trees by Insertion.
+    n = [40, 20, 10, 25, 30, 22. 50]
+    start with first elem, 40
+    build the BST uptil 3 nodes,
+    check balance factor:
+      - if imbalanced, on the spot balance it! (RR, RL, LR, LL)
+      - If multiple subtrees get imbalanced at same time,
+        - start rotating from the place of insertion, i.e bottom-up
+      - Always use the 3 node and formula:
+        -     [A]
+              / \
+          [AL]   [B]
+                /   \
+              [C]    [BR]
+              /
+            [CL]
+
+        - foucs on rotating A-B-C, then attach L and R subtrees.
+          - L_subtree goes to left side, R_substree goes to right side.
+    
+    = Time Complexities:
+      = Search a elm --> O(LogN)
+      = Insert 1 elm --> O(LogN) --> {O(logn) to look for correct place + O(logn) for rotations}
+      = Rotation     --> O(LogN)
+
+  - Applications:
+    - Maintaining sorted data with predictable access times.
+    

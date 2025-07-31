@@ -1,0 +1,54 @@
+- A system call is a programmatic way in which a program requests a service from the kernel.
+- Sys calls provide an interface to the services provided by OS.
+- To execute sys calls, a program is privilaged with Kernal mode from user mode.
+
+- Types of system calls:
+  1. Process Control: 
+    - These system calls are used to create, modify, and manage processes and threads.
+      - fork(): creates a new child process by duplicating the calling process.
+                fork summons a complete different process with separate PID.
+                = Each time we call fork(), the child processes DOUBLES!
+                = Total Number of Processes = 2^n, where n is no. of fork() calls.
+                - Let's say in a C program, if we cal fork() 2 times in a main function:
+                  - For the first fork, The parent P1 will summon a P2.
+                  - For the second fork, Both P1 and P2 will summon their child, P3 and P4.
+                     [P3]      [P4]
+                      ^         ^
+                      |         |
+                  -  [P1] ---> [P2] 
+      - exec(): replaces the current process image with a new program (used after fork() to run another program).
+                exec replaces the current process and retains the PID.
+                = once called exec("./bin2") from "./bin1", there's no way we can go back to "bin1".
+      - wait(): makes a parent wait until one of its child processes terminates.
+      - exit(): terminates the current process, optionally returning an exit status.
+  
+  2. File Management: 
+    - These system calls are used to create, modify, and manage files and directories.
+      - open()  - opens a file and returns a file descriptor for subsequent operations.
+      - read()  - reads data from a file descriptor into a buffer.
+      - write() - writes data from a buffer to a file descriptor.
+      - close() - closes an open file descriptor, freeing resources.
+  
+  3. Device Management: 
+    - These system calls are used to access and manage hardware devices such as printers, disks, and NIC.
+      - ioctl() - performs device-specific operations on a file descriptor (commonly used for hardware control).
+      - read()  - reads data from a device file (e.g., /dev/input/mouse0), similar to file reads.
+  
+  4. Information Maintenance: 
+    - These system calls are used to retrieve and update information about the system and its resources.
+      - getpid() – returns the process ID of the calling process.
+      - getuid() – returns the user ID of the process's owner.
+      - getgid() – returns the group ID of the process's owner.
+  
+  5. Communication: 
+    - These system calls are used to facilitate interprocess communication and synchronization.
+      - pipe()    - creates a unidirectional communication channel (pipe) between two processes.
+      - socket()  - creates a network endpoint used for interprocess or network communication.
+      - sendmsg() - sends a message through a socket, often used for complex or structured communication.
+  
+  6. Memory Management: 
+    - These system calls are used to allocate and manage memory resources.
+      - mmap()   – maps files or devices into memory, allowing file I/O via memory access.
+      - brk()    – changes the end of the data segment, effectively growing/shrinking the heap.
+      - malloc() – only user level syscall; allocates heap memory 
+                  (not a system call directly; internally uses brk() or mmap()).

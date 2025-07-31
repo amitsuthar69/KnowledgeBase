@@ -1,0 +1,30 @@
+- Red Black Trees are self-balancing BST (alternative to AVL Trees).
+- A Red Black Tree is a BST where each node has a color (Red or Black).
+- Min and Max height are O(LogN)
+- All operations happen at O(LogN)
+- 5 Properties of Red-Black Tree (CLRS):
+  1. Each node is either Red or Black.
+  2. Root node is always Black.
+  3. Every Leaf node (nil node) is Black.
+  4. If a node is Red, both of its childrens has to be Black.
+  5. Starting from any node, all simple paths down to leaf has same number of Black nodes.
+
+  - longest path (Hmax) <= 2*(Hmin) shortest path.
+  - complete Binary Tree has (2^h+1 - 1) nodes.
+
+  = Rotating restructures the tree locally without violating BST property.
+    = Rotation changes LINKs and NOT COLORs at O(1).
+
+  - Insertion in a RBT:
+    - We first insert the Node with normal BST method.
+    - Then we decide what color this new node gets?
+      - Assigned color shouldn't violate any of the 5 Properties.
+      - Whenever we have a RBT violation after insertion,
+        - We know that the node gets Black Color.
+    - Let's say a Node u is added in the leaf.
+    = Case 1: if 'u' has a Black parent:
+      - Simply color the new node Red. (resolve color violation locally)
+    = Case 2: if 'u' has a Red parent and a Red Uncle(the adjacent node from left/right subtree):
+      - Push down the Black color of Parent's and Uncle's ancestor to Parent and Uncle.
+      - Then, color node u with Read.
+    = 

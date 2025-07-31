@@ -1,0 +1,50 @@
+# SQL
+
+- SQL (Structured Query Language) is a standard programming language used to communicate with relational databases. 
+
+- It allows users to create, read, update, and delete data, and provides commands to define database schema and manage database security.
+
+- SELECT DISTINCT => to query unique elements from the table.
+
+- COUNT(*) => counts all rows in a column
+
+- ORDER BY() => Sort rows
+
+- LENGTH(entry) => gives length
+  > ORDER BY LENGTH() ASC  => sorts in asc order
+
+- LIMIT => limits the returned row count
+
+- UNION ALL => concatenates the results of two (or more) queries into a single result
+
+- LOWER(LEFT(CITY, 1)) in ('sub-string') => checks if the first character is in sub-string
+
+- RIGHT(col_name, n) extracts the "last" n characters of each col_name
+
+- Decision making in SQL:
+  > syntax:
+    CASE
+        WHEN condition1 THEN result1
+        WHEN condition2 THEN result2
+        ELSE default_result
+    END
+
+  > eg:
+    SELECT name,
+        CASE 
+            WHEN age > 65 THEN 'Senior'
+            WHEN age > 18 THEN 'Adult'
+            WHEN age > 13 THEN 'Teen'
+            ELSE 'Young'
+        END AS age_group
+    FROM people;
+
+- END marks the end of the CASE statement (every CASE needs an END)
+- AS gives a name to the new column that the CASE statement creates (means the results will show up in a new column with specified name)
+ 
+- CONCAT('a', 'b') combines strings a and b together.
+
+- GROUP BY col_name Groups all rows that have the same occupation together, 
+  Creates a bucket for each unique occupation, 
+  All rows in each bucket share the same occupation name.
+

@@ -1,0 +1,222 @@
+# MongoDB
+
+-------------------- BASICS --------------------
+
+- A Document-oriented NoSQL database.
+
+- Unlike SQL databases that use rows and columns, MongoDB stores data as BSON (Binary JSON) documents, 
+  making it easier to handle unstructured data.
+
+- MongoDB organizes data in a hierarchical structure, similar to traditional RDBs.
+  - Database (group of collections)
+    - Collections (group of documents)
+      - Documents (Self-contained JSON-like structure)
+
+- Key characteristics:
+  - Flexible schema design
+  - Document-based data model
+  - High scalability
+  - Built-in replication and sharding
+
+- A MongoDB document is a set of key-value pairs similar to a JSON object. 
+- Each key is a string and the value can be a variety of data types including strings, numbers, arrays, nested documents, etc.
+
+- JSON vs BSON:
+  - JSON is a human-readable data format widely used for transmission.
+  - JSON is slow to process as it needs to be parsed before head.
+
+  - BSON is binary encoded JSON serialization format which is used by MongoDB to store documents.
+  - Operations on BSON are very fast.
+
+- Schema and Data modelling:
+  - In MongoDB itself there isn’t an enforced schema—the database is schemaless.
+  - However, when we use an ODM (Object Document Mapper) like Mongoose, 
+    you define a Schema to outline the structure of your documents 
+    (field names, data types, validations, defaults, etc.), and then compile that schema into a Model.
+  - A model provides an interface to perform CRUD operations on a collection.
+  - A model is essentially a class with methods (such as create, find, update, and delete) 
+    that allows us to interact with the corresponding collection in the database.
+
+
+-------------------- QUERIES --------------------
+
+- CRUD operations in MongoDB are used to create, read, update, and delete documents.
+  - Create: db.collection.insertOne({ name: "Alice", age: 25 })
+  - Read: db.collection.find({ name: "Alice" })
+  - Update: db.collection.updateOne({ name: "Alice" }, { $set: { age: 26 } })
+  - Delete: db.collection.deleteOne({ name: "Alice" })
+
+- Query operations:
+  - MongoDB query operations are commands that allow us to retrieve specific subsets of data from your database. 
+    They allows to filter, sort, and manipulate documents based on various criteria.
+
+  - A basic MongoDB query follows this pattern:
+    - db.collection.find(query, projection)
+    - Here:
+      - query: Specifies which documents to select
+      - projection: Defines which fields to include/exclude
+
+  - Comparison Operators:
+    - $gt: Greater than
+    - $lte: Less than or equal to
+    - $ne: Not equal to
+
+  - Logical Operators
+    - AND condition: (implicit)
+      db.users.find({ 
+          age: { $gt: 25 },
+          status: "active"
+      })
+    
+    - OR condition
+      db.users.find({ 
+          $or: [
+              { age: { $gt: 25 } },
+              { salary: { $gt: 75000 } }
+          ]
+      })
+
+- Aggregation pipelines:
+  - An aggregation pipeline is a series of data processing stages that transform and analyze data in MongoDB.
+  
+  - Can be assumed as a factory assembly line where raw data goes in one end and processed results come out the other, 
+    with each stage performing a specific transformation.
+  
+  - Common pipeline operations:
+    - $match: Filters your data to keep only what you need.
+    - $group: Combines multiple documents and performs calculations on them.
+    - $sort: Arranges the results in order, either from highest to lowest or lowest to highest.
+    - $limit: Restricts the output to just the number of results you want.
+    - $project: Reshapes documents by selecting specific fields, adding new fields, and transforming existing ones
+      eg: Selecting which fields to keep or exclude. Using 1 includes a field, while 0 excludes it.
+  
+  - Example pipeline:
+    db.orders.aggregate([                  --> .aggregate() method accepts an array of queries
+        { $match: { status: "pending" } }, --> Filter stage
+        { $group: {                        --> Grouping stage
+            _id: "$customerId",
+            totalOrders: {$sum:"$amount"}  --> Accumulate amount
+        }},
+        { $sort: { totalOrders: -1 } },    --> Sorting stage (-1 : descending)
+        { $limit: 10 }                     --> Limit stage
+    ])
+
+  - The key advantage of aggregation pipelines is that they let you break down complex data processing tasks into manageable, sequential steps. 
+    Each stage builds on the previous one, making it easier to understand and maintain your data processing logic.
+
+- Indexing in MongoDB
+  - An index in MongoDB is a data structure that improves the speed of data retrieval operations on a collection.
+  - Without an index, MongoDB must scan every document in your collection to find matching results.
+  - We can create an index using the .createIndex() method.
+
+  - Types of indexes:
+    - Single field indexes: These are the most basic type of index.
+      - db.users.createIndex({ age: 1 }) --> 1 indicates ascending order (-1 for descending). 
+
+    - Compound indexes: Combine multiple fields into a single index.
+      - db.users.createIndex({ age: 1, name: -1 })
+      The order matters - this index would be efficient for queries using age and name together, but not for queries using only name.
+
+    - TTL (Time To Live) indexes: Special indexes that automatically remove documents after a certain period.
+      Used for data that needs to expire after a specific time, such as session information, logs, or temporary data.
+      - db.sessions.createIndex({ "createdAt": 1 }, { expireAfterSeconds: 3600 })
+        This index will remove documents from the sessions collection 1 hour (3600 seconds) after the createdAt field's value.
+
+  - View existing indexes: db.collection.getIndexes()
+  - Drop unused indexes: db.collection.dropIndex()
+
+  - Key points to note:
+    - Create indexes on fields frequently used in queries
+    - Indexes improve read performance but slow down write operations
+    - Each index requires additional storage space
+    - MongoDB supports up to 64 indexes per collection
+    - Use the ESR (Equality, Sort, Range) rule for compound indexes
+    - Avoid indexing small collections
+    - Monitor index usage to avoid unnecessary indexes
+    - Consider building new indexes during low-traffic periods
+
+- Capped collections in MongoDB are fixed-size collections. 
+  - Automatically overwrite the oldest documents when the specified size limit is reached. 
+    - db.createCollection("logs", { capped: true, size: 100000 });
+  - They maintain insertion order and are useful for scenarios where you need to store a fixed amount of recent data. 
+  - used for logging, caching, or monitoring data.
+
+- Optimizing MongoDB queries:
+  - Indexes: Create appropriate indexes to support query patterns.
+  - Query Projections: Use projections to return only necessary fields.
+  - Aggregation Pipeline: Optimize the aggregation pipeline stages to minimize data processing and improve efficiency.
+  - Index Hinting: Use index hints to force the query optimizer to use a specific index.
+  - Query Analysis: Use the explain() method to analyze query execution plans and identify bottlenecks.
+
+
+-------------------- TRANSACTIONS --------------------
+
+- A database transaction is a sequence of operations that must be executed as a single, all-or-nothing unit of work.
+- MongoDB transactions are ACID compliance, This ensures integrity and consistency of the data.
+- To use transactions in MongoDB, we typically 
+  - start a session,
+  - begin a transaction,
+  - perform the operations,
+  - commit or abort the transaction.
+
+- MongoDB Transactions:
+  - Supports multi-document operations
+  - Works across multiple collections
+  - Supports modern distributed systems
+  - Flexible retry logic
+  
+  - Requires session management
+  - Higher overhead than SQL
+  - Limited to single replica set
+
+
+
+-------------------- ARCHITECTURAL CONCEPTS --------------------
+
+- MongoDB ensures high availability and scalability through its features like Replica sets and Sharding.
+
+- A replica set in MongoDB is a group of mongod instances that maintain the same data set.
+  - It consists of a primary node and multiple secondary nodes.
+    - The primary node receives all write operations 
+    - The secondary nodes replicate the primary's data and can serve read operations.
+  - If the primary node fails, an automatic election process selects a new primary to maintain high availability.
+  - Replica sets provide redundancy and failover capabilities by ensuring that data is always available.
+
+- Sharding distributes data across multiple servers, enabling horizontal scalability to handle large volumes of data and high traffic loads.
+  - Each shard is a separate database that holds a portion of the data.
+  - MongoDB automatically balances data and load across shards, ensuring efficient data distribution and high performance.
+
+- GridFS is a specification for storing and retrieving large files in MongoDB. 
+  - It is used when files exceed the BSON-document size limit of 16 MB or 
+    when you need to perform efficient retrieval of specific file sections.
+  - GridFS splits a large file into smaller chunks and stores each chunk 
+    as a separate document within two collections: fs.files and fs.chunks. 
+  - This allows for efficient storage and retrieval of large files, such as images, videos, or large datasets.
+
+- MongoDB Atlas
+  - MongoDB Atlas is a fully managed cloud database service provided by MongoDB. 
+  - It offers automated deployment, scaling, and management of MongoDB clusters 
+    across various cloud providers (AWS, Azure, Google Cloud). 
+
+
+-------------------- MISC --------------------
+
+- Full Text Search:
+  - Full-text search in MongoDB allows you to search through text content in your documents 
+    to find matches beyond simple exact matching. 
+  - It's particularly useful when you need to find documents containing specific words or phrases, 
+    even when users might not know the exact terms they're looking for.
+  
+  - The two main phases of full-text search in MongoDB: Index Creation --> Search Process 
+    - Text Index Creation (top):
+      - Stop words like "the", "and", "a" that are removed to improve search efficiency.
+      - Stemming words to their base form (e.g., "running" becomes "run").
+      - Case conversion to ensure searches aren't case-sensitive.
+    - Search Process (bottom):
+      - When a search query is made, it goes through the same analysis as the index creation.
+      - The processed query is then matched against the indexed terms.
+      - Matching documents are retrieved and returned.
+    
+    - Example:
+      - db.collection.createIndex({ content: "text" });
+      - db.collection.find({ $text: { $search: "mongodb" } });

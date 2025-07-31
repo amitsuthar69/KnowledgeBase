@@ -1,0 +1,144 @@
+- In a Binary Search tree has:
+  - the left child should be strictly lesser than the parent node.
+  - the right child should be strictly greater than the parent node.
+  - left < parent < right
+  - The entire left subtree should itself be a BST and same for right subtree.
+  - Height of a BST = max(h(L_subtree, R_substree))
+  
+  = Inorder traversal of a BST yields a increasing sorted array.
+  
+  - Ideally duplicates are not allowed in BST, but if duplicates are needed:
+    - can modify condition: (l <= p < r) or (l < p <= r).
+    - or can store {elem, freq} pair in nodes.
+  
+  = Searching in a BST takes height of tree = O(LogN) time.
+    - cause at any given time, we divide the tree into lesser and greater half, similar to Binary Search. 
+    TreeNode* searchinBST(TreeNode* root, int k) {
+      while (root != NULL && root->val != k) {
+        root = root->val < k ? root->right : root->left;
+      }
+      return root;
+    }
+
+  = Ceil: a value >= key (the key itself or the smallest possible value greater than the key).
+    int findCeil(Node* root, int k) {
+      int cei = -1;
+      while (root) {
+        if (root->data == k) {
+          cei = root->data;
+          return ceil;
+        }
+        if (root->data < k) {
+          root = root->right;
+        } else {
+          // only update the ceil when encounter data greater than k
+          cei = root->data;
+          root = root->left;
+        }
+      }
+      return ceil;
+    }
+  
+  = Floor: a value <= key (the key itself or the largest possible value lesser then the key).
+    int floor(Node* root, int k) {
+      int flor = -1;
+      while(root) {
+        if (root->data == k) {
+          flor = root->data;
+          return flor;
+        }
+        if (root->data > k) {
+          root = root->left;
+        } else {
+          flor = root->data;
+          root = root->right;
+        }
+      }
+      return flor;
+    }
+
+  = Insertion of a new value in a BST:
+    We can insert the new value anywhere in the tree untill its a Valid BST.
+    TreeNode* insertIntoBST(TreeNode* root, int k) {
+      if (root == NULL) return new TreeNode(k);
+
+      TreeNode* parent = NULL;
+      TreeNode* curr = root;
+
+      while (curr) {
+        parent = curr;
+        if (k < curr->val) curr = curr->left;
+        else curr = curr->right;
+      }
+      if (k < parent->val) {
+        parent->left = new TreeNode(k);
+      } else {
+        parent->right = new TreeNode(k);
+      }
+
+      return root;
+    }
+
+  = Create a BST outta array: 
+    [30,9,15,45,24,8,5,75,50,80]
+    steps:
+      - Start with root.
+      - For each new value, recursively compare:
+        - If smaller, go left.
+        - If greater, go right.
+      - Repeat until an empty spot is found.
+              30
+            /   \
+           9     45
+          / \      \
+         8   15     75
+        /      \    / \
+       5       24  50  80
+
+  = Given a preorder traveral of a BST, construct its postorder:
+    [30, 20, 10, 15, 25, 23, 39, 35, 42]
+
+    As it is a preorder, the first element is the root of BST.
+    for the given preorder, the BST will look a like:
+           30
+         /   \
+       20     39
+      /  \    / \
+    10   25 35  42
+      \  /
+      15 23
+
+    Now, if we perform a postorder traveral, 
+    we'll get: [15, 10, 23, 25, 20, 35, 42, 39, 30]
+
+  = Inorder traversal of a BST is always in strictly increasing order.
+    = If a BST uses the reversal ordering on Natural Numbers, in-order will result in decreasing order. 
+
+  = A Binary Tree is always constructible with its given PRE-ORDER Traveral.
+
+  = A BST can get unbalanced if the elements are strictly increasing or decreasing, causing O(N) Complexity.
+    hence it needs to be Balanced using popular techniques:
+    1. AVL Trees.       (Read Intensive)
+    2. Red-Black Trees. (Write Intensive)
+    Both are self balancing binary search trees with different purposes.
+
+  = Real-World Applications
+    - Red-Black Trees are commonly used in:
+      - Java's TreeMap and TreeSet
+      - Linux kernel's scheduler
+      - Most modern programming language libraries
+
+    - AVL Trees are preferred in:
+      - Database indexing where fast retrieval is crucial
+      - Systems requiring predictable access times
+      - Applications with primarily read-only workloads
+
+  = Choose AVL Trees when:
+    - Your application is primarily read-heavy
+    - Predictable access times are critical
+    - Memory overhead isn't a significant concern
+
+  = Choose Red-Black Trees when:
+    - Your workload includes frequent insertions/deletions
+    - Memory efficiency is important
+    - You need simpler implementation and maintenance

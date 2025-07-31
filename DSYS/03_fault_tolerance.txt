@@ -1,0 +1,50 @@
+Availability:
+  Let's say an Online shop wants to sell stuff 24/7!
+  > Service unavailability = downtime = losing money
+  > Service Availability = uptime = fraction of time that a service is functioning correctly
+
+  > 99% up     = down 3.7 days/year
+  > 99.9% up   = down 8.8 hours/year
+  > 99.99% up  = down 53  minutes/year
+  > 99.999% up = down 5.3 minutes/year
+
+  > Service-Level Objective (SLO):
+    e.g. “99.9% of requests in a day get a response in 200 ms”
+
+  > Service-Level Agreement (SLA):
+    contract specifying some SLO, penalties for violation
+
+
+Achieving High Availability: Fault Tolerance
+
+- Failure: The system as whole not working.
+- Fault: Some part of the system isn't working.
+  > Node fault    (crash-stop/crash-recovery, Byzantine)
+  > Network Fault (dropping/delaying messages)
+
+- Fault Tolerance
+  The system as a whole comtinues working, despite some threshold amount of faults.
+- Single Point of Failure (SPOF)
+  Node/network link whose fault leads to failure.
+
+
+Failure(fault) Detectors:
+  Mechanism for detecting faults.
+  > Failure Detector:
+    Algorithm that detects whether another node is faulty.
+  > Perfect Failure Detector:
+    Labels a node as faulty iff it has crashed.
+    Perfect timeout-based failure detector exists only in a synchronous crash-stop system with reliable links.
+  
+  > Typical Implemtation (For Crash Stop Recovery)
+    - Send message
+    - Await response
+    - Label node as crashed if no reply within some timeout.
+  > Problem: 
+    Cannot tell the difference between crashed node, temporarily unresponsive node, lost/delayed message.
+
+  > Eventually perfect failure detector:
+    - May temporarily label a node as crashed, even though it is correct.
+    - May temporarily label a node as correct, even though it has crashed.
+    - But eventually, labels a node as crashed if and only if it has crashed.
+    - Reflects fact that detection is not instantaneous, and we may have spurious timeouts.

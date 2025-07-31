@@ -1,0 +1,15 @@
+API GATEWAY
+
+- An API gateway is a server that acts as a single entry point into a system of multiple microservices. 
+- Instead of clients interacting with each service directly, they communicate through the gateway, 
+  which handles several critical functions:
+  - Request Routing
+  - Security and Authentication
+  - Logging and Monitoring
+  - Protocol Transformation
+  - Load Balancing
+  - *Request Validation
+  - *Rate limiting and Caching
+
+- Client -> API Gateway -> Microservices
+

@@ -1,0 +1,76 @@
+# Chapter 1
+
+A Distributed System is 
+  "...a system in which failure of a computer you didn't even know existed can render your own computer unsuable."
+  ~ Leslie Lamport
+
+  "...multiple computers communicating via a network."
+
+  "...trying to achieve some task together."
+
+Why make distributed?
+  > Better Reliability. (If one node fails, the system as a whole keeps functioning)
+  > Better Performance. (Nearby node rather than halfway around the globe)
+  > Solve Bigger Problems.
+
+Why not distributed?
+  > Communication May Fail.
+  > Processes May Crash.
+  > All of this can happen non-deterministically.
+
+- Fault Tolerance: We want the system as a whole to comtinue working, even when some parts are faulty.
+
+
+# Chapter 2 (network)
+
+  [node i] --- message m ---> [node j]
+
+- Latency (time until message arrives)
+  > In same building/datacenter: ~1ms
+  > One continent to another: ~100ms
+  > Hard drives in a Van: ~1 day
+
+- Bandwitdh (data volume per unit time)
+  > 3G Cellular: ~1 Mbit/sec
+  > Home broadbans: ~10 Mbit/sec
+  > HDD in a Van: ~50 TB/day
+    (rough assumptions)
+
+- Remote Procedure(function) Call (RPC)
+  > RPC is a protocol that allows a program to execute a procedure on a different computer as if it were a local call.
+  > In simple words, its an execution of a function on a node, invoked by some other node.
+
+  All of it is possible because of the stub that the RPC framework provides.
+
+  > What is a STUB?
+    - Since the client and server have different address spaces, the parameters used in a function call must be converted. 
+      Otherwise, the parameter values would be unusable because pointers to parameters in one computer's memory would reference
+      different data on the other computer.
+    - To handle this, we've stub which is a intermediary program that acts as a temporary replacement for a remote service or object.
+    - It allows the client application to access a service as if it were local, while hiding the details of the underlying network communication.
+    - The process of generating stubs involves creating a client-side proxy object that provides the same interface as the remote service, 
+      but routes method calls to the actual remote object. 
+    - Stubs handle parameter conversion, making a remote procedure call look like a local function call to the remote computer.
+    - The client-side stub or proxy is responsible for converting the parameters used in a function call 
+      and deconverting the results returned by the server after executing the function, a process known as marshalling.
+    - Eg: Consider a payment service provides a RPC framework:
+     
+    |   .processPayment({params})  ---->  marshal_to_some_format()  ---> over the wire --> unmarshal() --> .processPayment({params})
+    | [proxy function used on client]    [encode to json, binary, etc]     [network]        [decode]        [actual precedure call]
+    | 
+    |  --- wait time ---
+    |
+    |  stub function returns  <----  unmarshal()  <--- over the wire <-- marshal()  <---  actual function returns
+    | [client gets the result]      [decode result]      [network]     [encode result]        [{return_val}]
+    |
+
+  > Problems with RPC:
+    - What is the message gets lost?
+    - What if the service gets crash during function call?
+    - what if message is delayed?
+    - Is it Safe to Retry?
+
+  > Popular RPC frameworks:
+    - Thrif (by Facebook, 2007)
+    - gRPC  (by Google, 2015)
+    - REST  often with JSON

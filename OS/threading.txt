@@ -1,0 +1,86 @@
+1. Multithreading
+- Types of Threads:
+  1. User Thread: 
+    - User threads are managed by user-level libraries without direct involvement from the OS.
+    - These are faster than the kernel-level threads, represented by the program counter, stack, register, and PCB.
+    - Typically employed in scenarios where fine control over threading is necessary, but the overhead of kernel threads is not desired. 
+    - Useful in systems that lack native multithreading support, allowing developers to implement threading in a portable way.
+    - Disadvantages:
+      - Limited use of multiprocessing.
+      - Blocking issues (A blocking operation in one thread can halt the entire process).
+    - Example: Goroutines.
+
+  2. Kernel Threads: 
+    - Kernel threads are managed directly by the OS, allowing for better concurrency & the ability to utilize multiple processors.
+    - Kernel threads allow real parallel execution in multithreading.
+    - Kernel threads have direct access to system-level features, including I/O operations.
+    - Disadvantages:
+     - Requires more time to create/manage
+     - Involves mode switching to kernel mode.
+    - Example: Java Threads.
+  
+  - There exists a relationship between user and kernel threads.
+  1. Many to One:
+     - Maps Many User threads managed by One Kernel thread.
+     - Thread Management done by user libraries.
+     - The entire process will block if any thread blocks.
+     - As only one thread can access the kernel at a time, multiple threads are unable to run in parallel on multiprocessor.
+      [UT] [UT] [UT] 
+        |   |   |
+         \  |  /
+          \ | /
+          [K-T]
+     - A single core processor can only 'process' one single thread at a time, 
+       multiple threads are needed to be context switched inorder to get processed simultaneously.
+     - A Many to one model can help in this scenario.
+
+  2. One to One:
+     - Maps each user thread to One kernel thread.
+     - Provides more concurrency than many to one.
+     - Multiple threads can run in parallel on multiprocessors.
+     - Creating a user thread will have equal overhead of creating a kernel thread.
+     - Number of threads in such model are hence restricted.
+      [UT] [UT] [UT] 
+        |   |    |
+        |   |    |
+      [KT] [KT] [KT]  
+
+  3. Many to Many:
+     - Multiplexes multiple user threads to equal or less kernel threads.
+     - Can create any amount of user threads and the corresponding kernel thread can run in parallel on multiprocessors.
+     - When a user thread performs blocking sys call, the kernel can schedule another thread for execution.
+     - Widely used multithreading model.
+      [UT] [UT] [UT] 
+        |   |   |
+         \  |  /
+          \ | /
+            X
+           / \
+        [KT] [KT]
+
+- Few Challenges with Multithreading:
+  1. If any of the thread invokes exec() syscall, the entire process including the threads gets replaced by the new process.
+
+  2. If a thread calls fork(), does the newly spawned process duplicates all the threads or is the new process single-threaded?
+    - It depends on the type of fork() method, some UNIX systems have 2 diff fork() methods:
+      - one that duplicates all threads
+      - another that duplicates only caller thread.
+    - But which version of fork() to use when?
+      - If exec() is called immediately after a fork() call, use the one that only duplicates caller thread.
+      - Viceversa.
+
+  3. Thread Cancellation:
+    - Thread Cancellation is the process of terminating a thread before its execution gets completed.
+    - A thread to be terminated is called as target thread.
+      - Cancellation scenarios:
+        - Asynchronous cancellation: One thread IMMEDIATELY terminates the target thread.
+        - Deffered cancellation: The target thread itself periodically checks whether it should terminate.
+    - Situations where thread cancellation is Problematic:
+      - Resources have been allocated to a cancelled thread.
+        Therefore cancelling such threads asynchronously may not free a necessary system-wide resource.
+        In most cases OS reclaims the resources.
+      - A thread is cancelled in midst of updating data it is sharing with some other threads.
+
+2. Hyperthreading or Simultaneous Multithreading (SMT) (introduced by Intel).
+   - Hyperthreaded systems allow their processors cores' resources to become multiple logical processors.
+   - This means, 1 single physical core and be utilized as 2 logical cores.

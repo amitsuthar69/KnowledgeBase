@@ -1,0 +1,36 @@
+# Dynamic Programming
+
+- DP = Recusrion + Memoization
+
+- Solves Recusrion Overlapping Problem (2 Simultaneous Recusrion Calls)
+
+- Optimization Problems
+
+- Identification (Similar to Recusrion)
+  - Choice based question --> Recusrion --> DP > (knapsack)
+  - Optimial Answer required > (maximum, minimum, largest, smallest, etc)
+
+- Approach
+  - Recusrive solution --> Memoization --> Top Down table
+
+- Popular Problems:
+  - 0-1 Knapsack (either whole or none, cannot repeat an elem)
+    - Subset Sum Problem
+    - Equal Sum Partition
+    - Munimum Subset Sum
+    - Target Sum
+    - Stickler Thief
+    - Stock Buy and Sell (at-most k transactions allowed)
+  - Unbounded Knapsack (can repeat an elem to fulfill condition)
+    - Rod Cutting Problem
+    - Coin change I
+    - Coin Change II
+    - Maximum Ribbon Cut
+  - Fractional Knapsack (can select fraction of an elem)
+  - Fibonacci
+  - LCS
+  - LIS
+  - Kadane's Algorithm
+  - Matrix Chain Multiplication
+  - DP on trees
+  - DP on grid

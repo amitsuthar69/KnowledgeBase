@@ -1,0 +1,73 @@
+1. The Two Generals Problem: (Honest Generals, Unreliable Channel)
+
+> Two Generals want to Attack on a same enemy territory, but the constraint is that they both have to attack on same time,
+> If either of them does individual attack, they'll loose. So they both have to coordinate their attacks.
+> The Two generals are only able to communicate with one another by sending a messenger through enemy territory. 
+> The problem asks how they might reach an agreement on the time to launch an attack, while knowing that any messenger they send could be captured.
+
+
+2. The Byzantine Generals problem: (Unreliable Generals, Reliable Channel)
+
+> We imagine that several divisions of the Byzantine army are camped outside an enemy city, each division commanded by its own general.
+> The generals can only communicate with one another bu messenger. After observing the eenmy, they must decide upon a common plan of action
+> However, some of the generalsmay be traitors, trying to prevent the loyal generals from reaching agreement.
+  - Upto f generals might behave maliciously.
+  - Honest generals don't know who the malicious ones are.
+  - The malicious generals may collude.
+
+> The generals must have an algorithm to guarantee that:
+  - All loyal generals decide upon the same plan of action.
+  - A small number of traitors cannot cause the loyal generals to adopt a bad plan.
+
+> THEOREM:
+  - "Need 3f + 1 generals in total to tolerate f faulty generals" (i.e, < 1/3 maybe be malicious).
+  - Cryptography helps but problem remains hard.
+
+In Real Systems, Both Nodes(Generals) and The Network(Channel) may be faulty!
+
+
+Three Aspects of A System Model: (Basis of any Distributed System)
+
+1. Network Behavior (message loss)
+   Assume bi-directional point-to-point communication between two nodes, with one of:
+   > Reliable Links:
+     - A message is received iff it is sent. May be reordered.
+   > Fair-Loss Links:
+     - Messages maybe lost, reordered or duplicated. If kept retrying, a message eventually gets through.
+   > Arbitary Link:
+     - A malicious adversary ay interfere with messages (evesdrop, modify, drop, spoof).
+   > Network Partiton:
+     - Some links dropping/delaying all messages for extended period of time.
+
+2. Node Behavior (crashes)
+   Each node executes a specified algorithm,assuming one of the following:
+   > Crash-stop:
+     - A node is faulty if it crashes, fter crashing it stops executing forever.
+   > Crash Recovery:
+     - A node may crash, losing its in-memory state, but it may resume executing sometime later.
+   > Byzantine (fail-arbitary):
+     - A node is faulty if it deviates from the algorithm, it can then do anything faulty/malicious.
+
+3. Time Behavior (latency)
+   Assume one of network or node:
+   > Synchronous:
+     - Message latency no greater than a known upper bound. Algorithm executes at known speed.
+   > Asynchronous:
+     - Messages can be delayed arbitarily, nodes can pause execution arbitarily.
+     - No timing guarantee at all.
+   > Partially Synchronous:
+     - The system is Asynchronous for some finite period of time, synchronous otherwise.
+
+Violations of synchrony in practice:
+  > Networks usually have quite predictable latency, which can occasionally increase:
+    - Message loss requiring retry
+    - Congestion/contention causing queueing
+    - Network/route reconfiguration 
+
+  > Nodes usually execute code at a predictable speed, with occasional pauses:
+    - Operating system scheduling issues, e.g. priority inversion
+    - Stop-the-world garbage collection pauses
+    - Page faults, swap, thrashing
+
+  > Real-time operating systems (RTOS) provide scheduling guarantees, 
+    but most distributed systems do not use RTOS

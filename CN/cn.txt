@@ -1,0 +1,262 @@
+# How the Internet Works – Step-by-Step:
+
+1. URL Entered in Browser
+2. Local Cache Checks
+3. DNS Lookup (If Not Found in Cache)
+4. IP Address Sent Back to Browser
+5. Establishing a Connection (TCP/IP & Handshake)
+6. IP Routing & Hops
+7. Destination Server Reached
+8. Server Response Sent Back
+9. Browser Renders the Webpage
+10. Securing Connection
+
+-------------------------------------------------------------------------
+
+# DNS Resolution
+
+- DNS (Domain Name System) translates human-readable domain names into machine-readable IP addresses
+- DNS queries uses UDP protocol for faster communication.
+  - If TCP was used, we'd have spent a lot time in handshakes and Acknowledgements.
+- IP address is usually cached by browsers and kernel to avoid resolution lookups.
+- If not found in cache, then only the machine queries the DNS resolver.
+
+- Resolution process:
+  - DNS Resolver
+    - First point of contact for DNS queries provided by ISP or third-party services
+    - Checks local cache before querying other servers
+
+  - Root Servers
+    - First step in domain resolution
+    - Directly queries the appropriate TLD servers
+    - Global distribution for reliability
+  
+  - TLD (Top-Level Domain) Servers
+    - Manage .com, .org, .edu, etc.
+    - Directs to authoritative name servers
+    - Store information about domain registrations
+  
+  - Authoritative DNS Servers
+    - Store actual IP addresses for domains
+    - Final authority for domain information
+
+  - This retrived IP address gets cached at each stage in upstream to avoid unnecessary lookups.
+
+  - DNS Resolver <--> Root Servers <--> TLD Servers <--> Authoritative Server
+
+-------------------------------------------------------------------------
+
+# Transmission Control Protocol:
+
+[1] TCP establishes a three way handshake between peers to exchange their initial sequence numbers
+    to synchronize future communications.
+
+[2] TCP caches everything sent for a Retransmission 
+    - If No ACK is received, segment is resent.
+
+[3] Initially, TCP sent an ACK for every packets received.
+    - So for 100 packets, 100 ACK has to be sent. 
+      This doubles the amount of packets need to be sent on wire.
+    - To reduce this Burden, An optimization is added to TCP, named as 'Delayed Acknowledgements'
+    - Delayed ACK: Send ACK every other segment
+      eg: A Single cumulative ACK for SEQ 1001 and 1200 (200 bytes) is sent at once 
+
+[4] [FLOW CONTROL]: TCP Window size defines how much unacknowledged packets can a peer send before waiting for ACK. 
+    - These packets are called as 'bytes in flight'.
+    - A window size is how many bytes can exist on the wire in the path between A and B.
+    - It is a field in TCP header and is sent in each ACK segment.
+    - A window size is set by the receiver and can be dynamically updated through connection.
+
+[5] TCP is bidirectional. Both Peers can send data to each other.
+    - Both Peers have SEQ# to track bytes sent.
+    - Both Peers have ACK# to track bytes received.
+    - Initial Sequence Numbers (ISN) are randomly chosen by sender. 
+      These ISNs must be shared during the handshake
+
+[6] TCP has two options to close the connection:
+    
+    a. Graceful closure: (2 way) (everything went well)
+      - Either of A or B can use the [FIN] flag to indicate that they want to close the connection.
+      - Connection would not close immediately and would wait for
+        any pending data to receive or an closure ACK.
+      - With this type of closure, the FIN flag has to be acknowledged with sender's SEQ+1 from both A and B.
+    
+    b. Ungraceful closure: (1 way) (Something went wrong)
+      - One way RST (reset) flag.
+      - Either peer can send to the [RST] flag to immediately close the connection.
+      - None waits for acknowledgement, cause once the RST flag is set
+        sender deletes every information regarding receiver. 
+
+- TCP ensures reliability, flow control and error handling during transmission. 
+
+-------------------------------------------------------------------------
+
+# OSI Reference Model
+
+Layer 1: (Bits)
+    - Computer Data exists in form of bits 0s and 1s.
+    - Something has to transport these bits between hosts.
+    - L1 Technologies: Ethernet Cables, WIFI radio waves, Repeater, Hub
+
+Layer 2: (Frames)
+    - Interacts with Physical layer to PUT and RETRIEVE bits from wire.
+    - L2 Technologies: Switches, Network Interface Cards (NIC), WIFI Access Cards (WAC) 
+    - Addressing Scheme: MAC addresses
+        - 48 Bits, represented as 12 hex digits
+        - eg: 94-65-9C-3B-8A-E5 (windows), 94.65.9C.3B.8A.E5 (linux), 9465.9C3B.8AE5 (cisco devices)
+    - L2 devices like switches uses a MAC address table (CAM table) to find the destination MAC address.
+
+Layer 3: (Packets)
+    - Ensure the bits reach the host machine after hops.
+    - L3 Technologies: Routers, Hosts, anything with an IP address
+    - Addressing Scheme: IP addresses
+        - 32 bits (IPv4), represented as 4 octets (each 0 to 255)
+    - Uses Address Resolution Protocol [ARP] to link a L3 address (IP) to L2 address (MAC)
+
+Layer 4: (Segments)
+    - Distinguish data stream to ensure right programs(services) receives the right packets.
+    - Addressing Scheme:
+        - Port Numbers : 0 to 65535 for TCP and UDP each.
+        - servers listens for requests on predefined ports [HTTP(TCP): 80, HTTPS(TCP): 443, UDP: 6667]
+        - clients select random port for each connection and receives response on the same port.
+        - eg:  TCP  1.1.1.1:9999 (browser)  <-->  2.2.2.2:80 (HTTP server)
+Layer 5:
+    - Distinguishes between User sessions. It identifies a user independent of L4, L3 or L2 addresses.
+    - Layer 5 helps user persist his information when the L2 to L4 info changes (i.e., his network changes)
+    - HTTP Cookie is an example of a Layer 5 session. 
+        - HTTP servers use a unique Cookie to identify same user independent of his L2 to L4 addresses. 
+Layer 6:
+    - Determines how to interpret 1s and 0s.
+    - Everything up till layer 5 is a continuous stream of bits. Layer 6 determines the fragmentation scheme of bits.
+    - This fragmentation will help make meaning sequences out of huge random streams.
+    - eg: consider the stream  : 00010010101010011101010111101001110001001010101001110101011110100000
+        - base64 (6 bits)      : 000100 101010 100110 ...     => R O V ...
+        - hexadecimal (4 bits) : 0001 0010 1010 0100 1110 ... => 4 7 4 5 5 ...
+        - 32 Bit numbers       : 00010010101010011101010111101001 00010010101010011101010111101001 => 2 huge numbers
+        - HTTP eASCII (8 bits) : 00010010 101011001 11010101 ... => GET ...
+Layer 7:
+    - Determines what to do with Layer 6 interpreted characters.
+    - Application commands.
+    - example, Layer 7 will interpret this extended ASCII byte sequence:
+        10100011 101000101 01010100 00100000 00101000 as an HTTP/1.1 'GET /' request
+    - [PROTOCOLS like TCP, UDP, FTP, etc implement L5, L6 and L7 independently]
+
+------------------------------------------------------------------
+
+# HTTP/HTTPs
+
+- HTTP is an Application Layer (OSI layer 7) built on top of TCP.
+- HTTP allows us to share documents (usually markups, stylesheets and js files) across internet. 
+- HTTP features request-response model and provides several HTTP Request Methods and Response Status Codes. 
+
+- HTTP Request Methods:
+  - GET: Retrieve data
+  - POST: Send data to server
+  - PUT: Update existing resource
+  - DELETE: Remove resource
+  - PATCH: Partial resource update
+  - HEAD: Get headers only
+  - OPTIONS: Show supported methods
+
+- Response Status Codes:
+  - 1xx: Informational responses
+  - 2xx: Success responses
+    - 200: OK
+    - 201: Created
+  - 3xx: Redirection
+    - 301: Moved permanently
+    - 302: Found (temporary redirect)
+  - 4xx: Client errors
+    - 400: Bad request
+    - 401: Unauthorized
+    - 403: Forbidden
+    - 404: Not found
+  - 5xx: Server errors
+    - 500: Internal server error
+    - 503: Service unavailable
+
+- HTTPS is an extension of HTTP that adds encryption for secure communication over computer networks.
+- It uses Transport Layer Security (TLS) or Secure Sockets Layer (SSL) protocols for encryption.
+
+
+----------------------------------------------------------------------------------
+
+- SSL/TLS Handshake:
+
+  - Initial Connection Phase (Top section):
+    - Server sends its certificate containing its public key
+    - Client verifies server identity using this public key
+    - This phase uses asymmetric encryption for security
+
+  - Session Key Generation (Middle section):
+    - Client generates a random session key
+    - Encrypts it using server's public key
+    - Only server can decrypt it using its private key
+ 
+  - Secure Communication Phase (Bottom section):
+    - Both parties switch to symmetric encryption
+    - Uses the shared session key for all subsequent communication
+    - Much faster than asymmetric encryption for bulk data transfer
+
+
+- Symmetric and Asymmetric encryption:
+ 
+  - Asymmetric (Public Key) Cryptography:
+    - During the TLS handshake, asymmetric cryptography is used. 
+    - In this phase, the server (and sometimes the client) uses a public/private key pair to exchange information securely. 
+    - Typically, the server sends its certificate (which contains its public key) so that the client can verify its identity 
+      and establish a secure connection.
+    - The asymmetric part is primarily used during the handshake for authentication and to agree on a shared secret.
+
+  - Symmetric Cryptography:
+    - After the handshake, both parties use a shared secret key (derived during the handshake) 
+      for encrypting and decrypting the data. This is much faster and is used for the bulk of the communication.
+    - While symmetric encryption is used to secure the data transfer, the initial key exchange relies on asymmetric methods.
+
+
+------------------------------------------------
+
+Delay in Computer Communication
+
+- Types of Delays in Computer Communication:
+  - Transmission Delay (store-and-forward delay) :
+    - The amount of time required to push all the packet's bits into the wire. 
+    - In other words, this is the delay caused by the data-rate of the link. 
+    - Transmission delay is a function of the packet's length.
+    - This delay is proportional to the packet's length in bits.
+    - D_T = N / R  seconds
+      - where:
+        - N is the number of bits;
+        - R is the rate of transmission (say, in bits per second).
+    - Most packet switched networks use store-and-forward transmission at the input of the link. 
+      A switch using store-and-forward transmission will receive (save) the entire packet to the buffer 
+      and check it for CRC errors or other problems before sending the first bit of the packet into the outbound link. 
+      Thus, store-and-forward packet switches introduce a store-and-forward delay at the input to each link along the packet's route. 
+  
+  - Propagation Delay :
+    - In CN, propagation delay is the amount of time it takes for the head of the signal to travel from the sender to the receiver. 
+    - An electromagnetic wave travelling through a medium has a propagation delay determined by the speed of light in that particular medium.
+    - It can be computed as the ratio between the link length and the propagation speed over the specific medium. 
+    - D_P = D / S  seconds
+      - where:
+        - D is the distance;
+        - S is the wave propagation speed.
+
+  - Queuing Delay
+    - Time the packet spends in routing queues
+    - In a packet-switched network, queuing delay is the sum of the delays encountered by a packet between the time of insertion 
+      into the network and the time of delivery to the address. 
+    - D_Q = 1/(μ-λ) 
+      - where:
+        - μ is the number of packets per second the facility can sustain
+        - λ is the average rate at which packets are arriving to be serviced.
+    - As a queue begins to fill up due to traffic arriving faster than it can be processed, the amount of delay a packet experiences 
+      going through the queue increases. The speed at which the contents of a queue can be processed is a function of the transmission 
+      rate of the facility. This leads to the classic delay curve.
+
+  - Processing Delay
+    - The time it takes routers to process the packet header.
+    - During processing of a packet, routers may check for bit-level errors in the packet that occurred during transmission 
+      as well as determining where the packet's next destination is.
+    - Routers performing network address translation also have higher than normal processing delay 
+      because those routers need to examine and modify both incoming and outgoing packets. 

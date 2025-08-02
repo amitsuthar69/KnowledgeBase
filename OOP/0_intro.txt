@@ -1,0 +1,151 @@
+- Object-oriented programming is a programming paradigm based on the object – a software entity that encapsulates data and functionality. 
+- An OOP program consists of objects that interact with one another. 
+- A programming language that provides OOP features is classified as an OOP language.
+
+- Before OOP, most programs used a procedural approach, where the focus was on writing step-by-step functions. 
+- This made it harder to manage and reuse code in large applications.
+- To overcome these limitations, Object-Oriented Programming was introduced.
+  - In procedural code, we'd write calculateArea(radius) and pass data into functions.
+  - In OOP, we'd create a Circle object with a radius and a method like circle.calculateArea().
+
+- Features of OOP:
+  - Structures code into logical units (classes and objects).
+  - Keeps related data and methods together (encapsulation).
+  - Makes code modular, reusable and scalable.
+  - Prevents unauthorized access to data.
+  - Follows the DRY (Don’t Repeat Yourself) principle.
+
+- Class:
+  - A Class is a user-defined blueprint or prototype from which objects are created. 
+  - It represents the set of properties or methods that are common to all objects of one type. 
+  - access_modifier class<class_name> {
+      data member;
+      method;
+      constructor;
+      nested class;
+      interface
+      ;
+    }
+
+- Object:
+  - An Object is a basic unit of OOP that represents real-life entities. 
+  - The objects are what perform our code, they are the part of our code visible to the viewer/user. 
+  - Objects (non-primitive types) are always allocated on the heap, while their reference variables are stored on the stack.
+  - An object mainly consists of: 
+    - Identity: It is a unique name given to an object that enables it to interact with other objects.
+    - Method: A method is a collection of statements that perform some specific task and return the result to the caller.
+      - Methods can be categorized based on their declaration and usage patterns:
+        1. Static Methods:
+          - Created with the 'static' modifier.
+          - Belong directly to the class rather than instances and Can be called without creating an object of the class.
+          - Only a single copy of static variable/methos is created and used, hence they have fixed memory allocation in RAM.
+          - Static members should accessed in a static way. (ClassName.Variable or ClassName.method())
+        2. Instance (Non-static) Methods:
+          - Belong to instances of a class, Must be called through an object reference.
+        3. Overloaded Methods:
+          - Methods that share same name but have different parameters, The process is called method overloading.
+          - Method overloading allows function signatures to have same name with different parameters. (including their datatypes)
+        4. Overloaded Constructors:
+          - Java allows constructor overloading as well, it works completely similar to Method Overloading.
+          
+
+- The 4 Pillars of OOP:
+  1. Abstraction: 
+    - Abstraction is the process of hiding the implementation details and only showing the essential details or features to the user. 
+    - It allows to focus on what an object does rather than how it does it. The unnecessary details are not displayed to the user.
+    - Java provides two ways to implement abstraction, which are listed below:
+      - Abstract Classes (Partial Abstraction)
+      - Interface (100% Abstraction)
+      
+      - Abstract Classes: 
+        - The abstract keyword can be applied to both classes and objects.
+        = An abstract class cannot be explicitly instantiated, it should be inherited/sub-classed.
+          - This strict behavior is to prevent the access to the underlying generic class which is too wague or abstract.
+          - For Example:
+            - A Vehicle class must be an abstract class with other subclasses(e.g: Car) inheriting it.
+            - This restricts the access to Vehicle class directly and allows us to use more sophisticated implementation of it(Car).
+        = Abstract methods are declared without an implementation in the Abstract Class.
+          - This makes the method more flexible and allows overriding it.
+          - All the inherited subclasses must implement(override) the inherited abstract methods.
+          - This is termed as 'Method Overriding', which allows a subclass to have its own implementation of an abstract method.
+          - Done with the '@Override' keyword.
+            - For Example:
+              - The Vehicle class can have an abstract method accelerate().
+              - This accelerate() methode can be overridden by the Car subclass.
+        = A method in a abstract class which is common to all subclasses is called a Concrete Method.
+          - A Concrete Method is implemented within the abstract class itself.
+      
+  2. Inheritance:
+    - It is the mechanism by which one class is allowed to inherit the features (fields and methods) of another class.
+    - Inheritance supports the concept of "reusability".
+    - In Java we achieve inheritance by using 'extends' keyword. Inheritance is also known as "is-a" relationship.
+    - Example: A Car class can extend a Vehicle class (A Car is-a Vehicle).
+    - Superclass: The class whose features are inherited is known as superclass (base or parent class).
+    - Subclass: 
+      - The class that inherits the other class is known as subclass (derived or extended or child class). 
+      - The subclass can add its own fields and methods in addition to the superclass fields and methods.
+    - Methods declared in Parent class can be overridden in child classes. (@Override is not necessarily required).
+    - Types of Inheritance in Java:
+      - Single: 
+        - A sub-class is derived from only one super class.
+        - Animal --> Dog.
+      - Multilevel: 
+        - A sub-class is derived from a base class which itself is derived from some other ancestor class.
+        - instantiating the extreme child class Triggers all constructors in chronological order.
+        - Vehicle --> Four Wheeler --> Car
+      - Hierarchical: 
+        - More than one subclass is inherited from a single base class.
+        -     Vehicle
+        -      /  \
+        -    Car  Bus
+      - Multiple: 
+        - One class can have more than one superclass and inherit features from all parent classes. 
+        - Java does not support itwith classes, we can achieve multiple inheritances only through Interfaces.
+        - A class 'extends' an another class, whereas a class 'implements' an interface.
+        - An airplane is both a land and air vehicle
+      - Hybrid:
+        - A mix of two or more of the above types of inheritance. 
+        - In Java, we can achieve hybrid inheritance only through Interfaces if we want to involve 
+          multiple inheritance to implement Hybrid inheritance.
+    
+    3. Ecapsulation:
+      - It is defined as the process of wrapping data and the methods into a single unit, typically a class. 
+      - It is the mechanism that binds together the code and the data.
+      - It is a protective shield that prevents the data from being accessed by the code outside this shield.
+      - Encapsulation can be achieved by declaring all the variables in a class as private 
+        and writing public methods in the class to set and get the values of the variables. (getters and setters)
+    
+    4. Polymorphism:
+      - The ability of an object to identify as more tha one type.
+      - Polymorphism in Java is achieved with:
+        - Method Overloading: (Static Polymorphism)
+          - Also known as Compile-Time Polymorphism, is the concept where more than one method share 
+            the same name with different signature(Parameters) in a class. 
+          - The return type of these methods can or cannot be same.
+        - Method Overriding: (Dynamic Polymorphism)
+          - Also known as Run-Time Polymorphism, is the concept where method in the child class has the same name, 
+            return-type and parameters as in parent class. 
+          - The child class provides the implementation in the method already written.
+
+  = Interface vs Abstract Classes:
+    > An interface is like a contract — it defines what a class must do, but not how. 
+      All methods are abstract by default (unless they’re default or static), and it supports multiple inheritance. 
+    
+    > On the other hand, an abstract class can have both abstract and concrete methods, 
+      and it’s used when some base functionality is common across derived classes. 
+      
+    > Interfaces are great for defining capability (like Runnable or Serializable), 
+      while abstract classes are better when you want shared code with a bit of abstraction. 
+    
+    > Also, in Java, a class can implement multiple interfaces but extend only one abstract class.
+
+    1. Interfaces can't hold state.
+      They can't have instance variables — only public static final constants.
+      A class, on the other hand, can have instance variables to hold data (like user name, balance, etc.).
+    
+    2. Interfaces can't have constructors.
+      You can't create an object from an interface. A class is needed to actually build the object with specific state and behavior.
+    
+    3. Classes can extend other classes and reuse real code.
+      An abstract class can define logic that's shared by all subclasses — like logging, caching, base structure 
+      which interfaces can't do fully (they're more limited).

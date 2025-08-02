@@ -70,6 +70,9 @@
         if (k < curr->val) curr = curr->left;
         else curr = curr->right;
       }
+      // at this point, curr brought the parent at leaf node.
+
+      // the only thing we do before insertion is to determine either left or right insertion.
       if (k < parent->val) {
         parent->left = new TreeNode(k);
       } else {
@@ -83,7 +86,7 @@
     [30,9,15,45,24,8,5,75,50,80]
     steps:
       - Start with root.
-      - For each new value, recursively compare:
+      - For each new value, recursively compare with parents:
         - If smaller, go left.
         - If greater, go right.
       - Repeat until an empty spot is found.

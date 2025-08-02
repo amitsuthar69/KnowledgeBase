@@ -2,7 +2,7 @@
 
 - Balanced BST:
   - A BST can still obey the left < root < right rule, but be very lopsided.
-  - It behaves like a linked list, searching becomes O(n), not O(log n)
+  - It can behave like a linked list, searching becomes O(n), not O(log n)
 
   - AVL trees fix that by enforcing a "Balance Factor".
     - Balance Factor(BF) = height(left subtree) − height(right subtree)
@@ -29,12 +29,11 @@
         [20]   -- bf=0
       
       - insert a new element '10':
-            [30] --> bf=2
+            [30] --> bf=2 --> insertion unbalanced the root
             / 
           [20]   --> bf=1
           /
-        [10]     --> vf=0
-        insertion unbalanced the tree
+        [10]     --> bf=0
 
       - What caused the imbalance?
         - As 10 was lesser than its parents, it went to left extreme position.
@@ -59,23 +58,23 @@
       - if imbalanced, on the spot balance it! (RR, RL, LR, LL)
       - If multiple subtrees get imbalanced at same time,
         - start rotating from the place of insertion, i.e bottom-up
-      - Always use the 3 node and formula:
-        -     [A]
-              / \
-          [AL]   [B]
-                /   \
-              [C]    [BR]
+      - Always use the 3 node formula:
+        -     [A]                    [C]
+              / \                    / \
+          [AL]   [B]      --->    [A]   [B] 
+                /   \             / \      \
+              [C]    [BR]     [AL]   [CL]   [BR]
               /
             [CL]
 
-        - foucs on rotating A-B-C, then attach L and R subtrees.
+        - focus on rotating A-B-C, then attach L and R subtrees.
           - L_subtree goes to left side, R_substree goes to right side.
     
     = Time Complexities:
-      = Search a elm --> O(LogN)
-      = Insert 1 elm --> O(LogN) --> {O(logn) to look for correct place + O(logn) for rotations}
-      = Rotation     --> O(LogN)
+      = Search an elm --> O(LogN)
+      = Insert an elm --> O(LogN) --> {O(logn) to look for correct place + O(logn) for rotations}
+      = Rotation      --> O(LogN)
 
   - Applications:
     - Maintaining sorted data with predictable access times.
-    
+    - DB indexes

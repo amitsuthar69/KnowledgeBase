@@ -273,20 +273,20 @@ Delay in Computer Communication
     - If /n is between /25 to /32, work in 4th octet...
 
   - Soln: 
-    1. /28 --> 4th octet --> We're working in the 4th octet
+    1. /28 --> 4th octet
     
     2. Block size:
       formula : 2^(8-(CIDR % 8))
       therefore, 2^(8-(28%4)) = 2^(8-4) = 2^4 = 16
       therefore, block size = 16
-      this means, we can jump 16 digits in the 4th octet ranges.
+      this means, we can jump 16 digits in the 4th octet.
     
     3. IP ranges we have:
        192.168.5.0  to 192.168.5.15
        192.168.5.16 to 192.168.5.31
        192.168.5.32 to 192.168.5.47
        192.168.5.48 to 192.168.5.63
-       192.168.5.64 to 192.168.5.79 --> out IP (192.168.5.77) lies in this range.
+       192.168.5.64 to 192.168.5.79 --> our IP (192.168.5.77) lies in this range.
        192.168.5.80 to 192.168.5.95 --> from here, we're out of range.
 
     3. From the given IPs in option, 192.168.5.95 is out of our range and hence is not in the same subnet

@@ -260,3 +260,87 @@ Delay in Computer Communication
       as well as determining where the packet's next destination is.
     - Routers performing network address translation also have higher than normal processing delay 
       because those routers need to examine and modify both incoming and outgoing packets. 
+
+  Q. IP 192.168.5.77/28. Which of the following is not in the same subnet?
+      A. 192.168.5.80
+      B. 192.168.5.95
+      C. 192.168.5.78
+      D. 192.168.5.79
+  
+  - Prerequisite:
+    - If /n is between /8 to /16, work in 2nd octet of IP address
+    - If /n is between /17 to /24, work in 3rd octet...
+    - If /n is between /25 to /32, work in 4th octet...
+
+  - Soln: 
+    1. /28 --> 4th octet --> We're working in the 4th octet
+    
+    2. Block size:
+      formula : 2^(8-(CIDR % 8))
+      therefore, 2^(8-(28%4)) = 2^(8-4) = 2^4 = 16
+      therefore, block size = 16
+      this means, we can jump 16 digits in the 4th octet ranges.
+    
+    3. IP ranges we have:
+       192.168.5.0  to 192.168.5.15
+       192.168.5.16 to 192.168.5.31
+       192.168.5.32 to 192.168.5.47
+       192.168.5.48 to 192.168.5.63
+       192.168.5.64 to 192.168.5.79 --> out IP (192.168.5.77) lies in this range.
+       192.168.5.80 to 192.168.5.95 --> from here, we're out of range.
+
+    3. From the given IPs in option, 192.168.5.95 is out of our range and hence is not in the same subnet
+
+    Block Size trick:
+    | CIDR | Size |
+    | ---- | ---- |
+    | /25  | 128  |
+    | /26  | 64   |
+    | /27  | 32   |
+    | /28  | 16   |
+    | /29  | 8    |
+    | /30  | 4    |
+
+
+  Q. Given IP 172.16.32.0/20 Determine Network and broadcast address, Range and usable hosts.
+
+    Network address   = First IP in the range.
+    Broadcast address = Last IP in the range.
+     
+    - given CIDR = 20
+    - Block size = 2^(8-(20%8)) = 2^4 = 16
+    - /20 --> 3rd octect.
+    - ranges:
+      172.16.0.0 to 172.16.15.0
+      172.16.16.0 to 172.16.31.0
+      172.16.32.0 to 172.16.47.0 --> Our IP lies in this Range
+
+    Therefore, 
+      Network Addres    = 172.16.31.0
+      Broadcast address = 172.16.47.255 --> Because next block starts at 172.16.48.0
+      Range             = 172.16.32.0 to 172.16.47.0
+      Usable Hosts      = 2^(32-20) = 4094
+
+  Q. IP: 10.0.64.19/18
+      Determine:
+      - Block size?
+      - Network address?
+      - Broadcast address?
+      - Total usable hosts?
+      - Usable IP range?
+
+    1. block size = 2^(8-(18%8))
+       = 2^(8-2) = 2^6 = 64.
+
+    2. Network Address:
+      /18 means 3rd octet
+      possible ranges:
+        10.0.0.0 to 10.0.63.0
+        10.0.64.0 to 10.0.127.0 (our range)
+      therefore, 10.0.64.0 is the Network address
+    
+    3. Broadcast address: 10.0.127.255
+    
+    4. Usable hosts: 16382
+    
+    5. usable range: 10.0.64.1 to 10.0.127.254

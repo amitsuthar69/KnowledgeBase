@@ -1,0 +1,81 @@
+- When a program runs, it needs RAM to load its instructions and data. 
+  - But RAM is limited and multiple programs run at once. 
+  - The OS manages how memory is shared, that’s memory management.
+
+- But sometimes, the physical memory becomes both insufficient and volatile.
+  - Volatile: No control over processes(programs) to access each other's address space.
+  - Insufficient: Some processes may need more memory for execution than freely available in main memory.
+  - Poor arrangement and allocation of memory can cause External Fragmentation.
+    - External Fragmentation:
+      - A situation when even though the total free memory is enough to run a Program, it can't because its not contigious.
+      - The free memory is fragmented in small chunks in between used memory.
+  - All of these problems are addressed by Virtual Memory.
+
+- Virtual Memory:
+  - It is a Memory Access Indirection technique implemented by OS.
+  - Instead of loacting a memory address based on its physical loaction in main memory, the OS creates a Virtual Address Space. 
+  - This Virtual Address Space is mapped to the physical memory(RAM).
+  - In Multi Process System, each process has its own Virtual Memory Space and is unaware of how the OS maps it to RAM.
+  - This behavior of taking away direct access of RAM from processes and to be managed by the OS reduces Security concers.
+  - With Virtual memory, the OS can extend the available memory by using Disk Space.
+    - A special 'Swap' file or 'Page' file serves as an extension of main memory.
+  - A program always Reads and Writes to its Virtual Memory Space but the actual data could be mapped to either RAM or Disk.
+  - Progarms that exceed memory capacity are swapped into the Disk by the OS to make some room for new programs.
+  - As Disk reads are slower, this makes the swapped progarm to run slower.
+  - Virtual Memory Systems uses Page Tables to map with physical memory.
+    - Paging avoids unnecessary Translation Tables.
+
+  - Paging:
+    - It is a Memory management scheme in which Virtual Memory.
+    - The OS divides virtual memory into fixed-size blocks called pages (e.g., 4KB each).
+    - Physical RAM is divided into frames of the SAME SIZE.
+    - When a progarm is executed, its pages are loaded into any available frames in RAM regardless of whether they're consequtive or not.
+    - Can cause Internal Fragmentation:
+      - The available space at the end of a page is unused because the memory required by the progarm is not perfectly aligned to the page size.
+    - With memory divided into small chunks, its possible to load only the critical/important parts of a program before execution.
+      - Other parts can be loaded on-demand and this is called Demand Paging.
+    - Pages can share common frames to save Memory, such pages are called Shared Pages.
+    - When a program accesses a page not in physical memory it cause a PAGE FAULT.
+    - In Systems that uses Paging, each memory address is divided into 2 parts, Page number and the Page offset.
+
+    - The Page Table:
+      - A special data structure managed by the OS that holds info about each page.
+      - A page table can hold a lot of page entries.
+        - For example if the virtual memory space has a capacity of 16GB and the page size is 4KB,
+          then the toal number of pages in the system will be 16GB/4KB = 16*2^30 B/ 4*2^10 B = 4 * 2^20 = 2^22 Pages
+          2^22 pages require a Page table of 4.2 Million entries.
+          And since each process has its own Virtual Memory space, the OS has to keep a Page table for each process.
+      - Each page table entry includes several fields:
+        1. Page Number.
+        2. Frame Number: Result of virtual page number translation.
+        3. Permission Bits: 
+          - A read-only bit which determines whether a page can be modified or not.
+          - A User/Supervisor bit which determines the privilage level required to access the page.
+          - No-Execute bit which controls whether code form this page can be executed or not.
+        4. Status Bits:
+          - A vaild bit which indicates whether this page points to a vaild frame. Invalid pages can cause Page Faults.
+          - Dirty bit to indicate whether a page is modified or not since it was loaded into memory.
+          - Accessed bit to check if the page was used recently.
+          - Global bit to indicate that the page is shared between processes.
+    
+    - Each Processor has a dedicated Hardware component called the Memory Management Unit (MMU) which manages all of the translations.
+      - MMU also has something called a Translation Look Aside Buffer which is a Cache.
+        - A TLB conatains copies of page table entries from multiple processes.
+        - A typical TLB size ranges from 32 to 1024 entries.
+        - If TLB misses, the OS checks the Page Table. This takes longer.
+
+Q. Given a reference string = [7, 0, 1, 2, 0, 3, 0, 4] and a frame size = 3 (only 3 slots in memory).
+determine total page faults with FIFO Page replacement algorithm.
+note: a reference string is a sequence of page numbers that a process requests over time.
+
+Ans:
+| #    | Page | Frame Status | Page Fault? | Notes              |
+| ---- | ---- | ------------ | ----------- | ------------------ |
+| 1    | 7    | [7]          | Yes         | Insert 7           |
+| 2    | 0    | [7, 0]       | Yes         | Insert 0           |
+| 3    | 1    | [7, 0, 1]    | Yes         | Insert 1           |
+| 4    | 2    | [0, 1, 2]    | Yes         | Remove 7, insert 2 |
+| 5    | 0    | [0, 1, 2]    | No          | Already in memory  |
+| 6    | 3    | [1, 2, 3]    | Yes         | Remove 0, insert 3 |
+| 7    | 0    | [2, 3, 0]    | Yes         | Remove 1, insert 0 |
+| 8    | 4    | [3, 0, 4]    | Yes         | Remove 2, insert 4 |

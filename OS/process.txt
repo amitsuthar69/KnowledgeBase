@@ -49,3 +49,168 @@
   - A socket enables communication between different processes on same or over a network.
   - Sockets use (protocol + IP + Port) to communicate over network.
 
+- Process Synchronization:
+  - Process Synchronization is a mechanism that ensures that two or more concurrent processes (or threads) 
+    execute in a coordinated manner when they access shared resources, such as memory, files, or devices.
+  - A cooperating process can be affected by other processes running on the system.
+  - Cooperating processes can either:
+    - Directly share a logical address space (both code and data)
+    - Or be allowed to share data only through messages or files.
+  - Concurrent access to shared data can cause data inconsistency.
+
+  - The Critical Section Problem:
+    - Consider a system with n processes {P0, P1, P3,...,Pn}
+      - Each process has a 'segment of code', called Critical Section, in which the process may change shared data.
+      - If multiple threads/processes enter this section at the same time, it leads to race conditions.
+      - When one process is executing in its Critical section, no other process is allowed to execute in it.
+      - Goal: Ensure that only one process enters its critical section at a time.
+    - General structure of a typical process:
+      do {
+        // entry section      --> each process must request permission to enter its critical section here
+          // critical section
+        // exit section
+          // remainder section
+      } while (true);
+    - Three Conditions to solve critical section problem:
+      1. Mutual Exclusion: Only one process at a time can be in the critical section.
+      2. Progress:
+        - If no process is in the critical section, the decision of who enters next can't be postponed.
+        - Only those processes which are not executing in their remainder section can participate in this decision.
+      3. Bounded Waiting: A process should not wait forever to enter its critical section.
+
+    - Peterson's Solution:
+      - A classic software based solution to critical section problem.
+      - May not work correctly for modern architectures.
+      - It ensures all 3 conditions.
+      - Peter's solution is restricted to 2 processes that alternate their execution between Critical and Remainder section.
+        - Say Process Pi and Pj.
+        - It uses 2 variables:
+          - boolean flag[2] --> Indicates if process i wants to enter its critical section.
+          - integer turn    --> Indicates which process gets priority when both want to enter.
+        - code:
+          // Suppose Pi wantes to enter critical section:
+          flag[i] = true;               --> Pi wants to enter
+          turn = j;                     --> Give turn to Pj first
+          while (flag[j] && turn == j); --> Wait until Pj finishes, control flow stops here ';'
+          // Critical section           --> When Pj is done, then and then only Pi enters
+          flag[i] = false;              --> Pi done
+
+    - Test and Set Lock:
+      - A Hardware based solution to Synchronization problem.
+      - It’s a low-level atomic instruction used to implement mutual exclusion in concurrent programming.
+      - A shared 'lock' variable is used with possible values of 0 (unlocked) and 1 (locked).
+      - Occurs in 2 Phase, Testing and Setting.
+        - Testing: 
+          - Before entering critical section, a process inquire about the lock.
+          - If its locked, it keeps on waiting till it becomes free.
+        - Setting:
+          - If its not locked, it takes the lock and executes the critical section.
+          - Sets lock to 1.
+      - code:
+        Let's say process Pi wants to enter the critical section,
+        - It first checks the lock flag, suppose flag is initially false: bool lock = false;
+        - Process Pi has code:
+          while(TestAndSet(&lock)) --> check for lock
+            ;
+          // critical section
+          lock = false;            --> reset lock
+        
+        - Process Pi can only enter critical section if its not stuck in the while loop, 
+          and that's only possible when TestAndSet returns false.
+        
+        - So the TestAndSet function is written as:
+          bool TestAndSet(bool *lock) {
+            bool old = *lock;  --> read current lock value.
+            *lock = true;      --> set it to true (lock it).
+            return old;        --> return the original value to caller (Pi).
+          }
+        
+        - With this code, the referenced value of lock gets modified to TRUE indicating there has to be a lock.
+          And the returned old value decided whether to stuck in while loop or not.
+        - So in our case, if the original lock value is false, TestAndSet updates it to True and returns False to Pi so it can enter CS.
+          And once done, Pi resets the lock to False.
+        
+    - Comparison:
+      | Feature          | Peterson’s           | Test-and-Set |
+      | ---------------- | -------------------- | ------------ |
+      | Mutual Exclusion | ✅                   | ✅           |
+      | Bounded Waiting  | ✅                   | ❌            |
+      | Scalability      | ❌ (2 processes only) | ✅           |
+      | Busy Waiting     | ❌                    | ✅           |
+
+    - Semophores:
+      - Proposed by dsger Dijkstra, it is a technique to manage concurrent processes by using a simple integer value: Semaphore.
+      - Semaphore is a non-negative valued shared across threads to solve critical section problem & ensure Synchronization.
+      - A Semophore S is an ineteger variable that apart from initialization, 
+        is accessed only through wait() and signal() atomic operations.
+        - Wait()   --> P() --> to Test
+          code:
+            wait(S) {
+              while (S<=0); --> untill we don't have any Semaphore to use, Block!
+              S--;          --> decrement S before use. 
+            }
+        
+        - Signal() --> V() --> to Increment
+          code:
+            Signal(S) {
+              S++;
+            }
+
+      - Two Types of Semaphores:
+        1. Binary Semaphore:
+          - S can only be 0(No) and 1(Yes).
+          - Only 1 process in critical section.
+          - Used for Mutual Exclusion.
+          - Example:
+            if Process Pi wants to execute in Critical Section:
+              // Process Pi;
+              semaphore S = 1;
+              Wait(S);
+              // critical section
+              Signal(S);
+            - So what happens is initially, S is 1, Pi uses Wait(S=1), since S=1, the while loop never blocks and we decrement S to be 0.
+            - Now as Pi has already moved to Critical Section with decrementing S to 0, any other process Pj will have S=0 and will be blocked.
+            - Pi enters critical section, execute and before leaving, calls Signal(S=0), Signal Increments S to 1, making it available for Pj.
+        2. Counting Semaphore: any non-negative value.
+          - S can any any non-negative integer.
+          - Any number of processes can Synchronize.
+          - Example:
+            if Processes Pi, Pj and Pk wants to execute in Critical section and we have 2 avaibale S:
+              semaphore S = 2;
+              Wait(S);
+              // critical section
+              Signal(S);
+            - What happens here is initially, S is 2, Pi uses Wait(S=2), since 2>0, the loop allows Pi to execute in Critical section.
+            - Pi decrements S to 1, Pj can still use S=1 to avoid the block and operate simultaneously(concurrently).
+            - Pj decrements S to 0 and hence Pk has to wait in while loop until either of Pi or Pj finishes their execution and calls Signal().
+
+      - Problems with Semophores:
+        - Starvation: If many threads compete, some may keep getting skipped — never acquiring the semaphore.
+        - Semophores requires Busy Waiting, and Busy Waiting wastes CPU cycles on unnecessary low-priority blocks.
+        - A Semophore in Busy Waiting is called spinlock.
+          - Why Spinlocks Are Problematic:
+            - Wastes CPU: Inefficient on single-core systems, where spinning blocks/prevents others from running.
+            - Doesn't scale: With many waiting threads, all of them waste CPU doing nothing useful.
+          - Spinlocks can be fixed:
+            When a process executes Wait() and finds S to be non-positive, rather than going in busy waiting,
+            - The Process can block its execution.
+            - It can be then placed into a waiting queue and its state is changed to Waiting.
+            - The control is transferred to CPU Scheduler, which selects some other non-blocking process to execute.
+        - Problem with this Solution:
+          - A semaphore in waiting queue can cause Deadlocks.
+          - This is a situation where 2 or more processes indefinitely for an event that will be caused only by one of the process in waiting queue.
+          - Deadlock: When 2 processes are waiting for each other to execute the Signal() operation, then they may endup being Deadlocked.
+            - Example:
+              Semaphores S=1, Q=1, Processes P1 and P2 executes concurrently.
+              [Process P1]                       |  [Process P2]
+              Wait(S=1); --> Decr(S=0)           |  Wait(Q=1);   --> Decr(Q=0)
+              Wait(Q=0); --> Already used by P2  |  Wait(S=0);   --> Already used by P1,
+              // CS                                 // CS
+              Signal(S); --> Incr(P=1)              Signal(S);  --> Incr(S=1)
+              Signal(Q)  --> Incr(Q=1)              Signal(Q)   --> Incr(Q=1)
+              
+              - As we can see, initially both S and Q were 1 and were used by P1 and P2 simultaneously.
+              - In the first line of execution, P1 sets S to 0 and P2 sets Q to 0.
+              - On the next line, P1 needs Q which is already used by P2 and likewise P2 needs S which is already used by P1.
+              - This causes both P1 and P2 to block forever, waiting for each other to Signal(S) and Signal(Q) to execute Critical Section.
+              - This is a Deadlock.

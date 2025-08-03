@@ -1,0 +1,8 @@
+- When two actions happen in the past, the earlier one uses past perfect → "had ...", and the later one uses simple past → "-ed".
+
+- Indefinite pronouns: Words like each, everyone, anybody, neither, either are always singular.
+  - eg: “Neither of the students was present.”
+
+- Prepositional phrases don’t change the subject: Ignore phrases like “of the students” when identifying the subject.
+  - eg: The list of items is on the table. (“list” is the subject, not “items”)
+
